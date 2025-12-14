@@ -3,131 +3,433 @@
 A beautiful, customizable onboarding/tour guide kit for Flutter apps. Highlight widgets, display tooltips, and guide your users step by step — perfect for tutorials and product tours.
 
 [![pub package](https://img.shields.io/pub/v/flutter_welcome_kit.svg)](https://pub.dev/packages/flutter_welcome_kit)
-[![likes](https://img.shields.io/pub/likes/flutter_welcome_kit)](https://pub.dev/packages/flutter_welcome_kit)
-[![popularity](https://img.shields.io/pub/popularity/flutter_welcome_kit)](https://pub.dev/packages/flutter_welcome_kit)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Demo
+---
 
-![Demo](doc/screenshots/demo.gif)
+## 📸 Demo
 
-## Live Demo
+![Demo](doc/screenshots/demo.webp)
 
-Try the live demo at: https://usman-bhat.github.io/flutter_welcome_kit/
+---
 
-## Features
+## ✨ Features
 
-✨ Smart positioning system that automatically places tooltips in optimal locations  
-🎯 Highlight any widget using `GlobalKey`  
-🔥 Animated tooltips with smooth transitions  
-🎨 Multiple animation types (fade, slide, scale, bounce, rotate)  
-🌈 Customizable background color per step  
-⏱️ Auto-advance steps with configurable duration  
-🎮 Interactive or non-interactive mode  
-📱 Responsive design that adapts to screen edges  
-⌨️ Keyboard navigation support  
-♿ Accessibility support  
-📝 RTL support
+| Feature | Description |
+|---------|-------------|
+| 🎯 **Spotlight Overlay** | Highlight any widget with a dark overlay cutout |
+| ✨ **8 Animation Types** | fade, slideUp/Down/Left/Right, scale, bounce, rotate |
+| 🔵 **4 Highlight Shapes** | Circle, rectangle, pill, rounded rectangle |
+| 💫 **Pulse Effect** | Animated pulse ring around highlighted widget |
+| 📊 **Progress Indicators** | Dots, text ("Step 2 of 5"), or compact ("2/5") |
+| ⏮️ **Full Navigation** | Previous, Next, and Skip buttons |
+| 🎨 **Customizable** | Colors, icons, styles, custom content per step |
+| 📍 **Smart Positioning** | Tooltip auto-positions to avoid edges |
+| ⌨️ **Keyboard Support** | Arrow keys, ESC, Enter/Space navigation |
+| 🔔 **Callbacks** | onComplete, onSkip, onStepChange events |
+| ⏱️ **Auto-advance** | Configurable timing per step |
+| 🌐 **RTL Support** | Works with right-to-left languages |
 
-## Installation
+---
+
+## 📦 Installation
 
 Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_welcome_kit: ^1.0.0
+  flutter_welcome_kit: ^2.0.0
 ```
 
-## Quick Start
+Then run:
+
+```bash
+flutter pub get
+```
+
+---
+
+## 🚀 Quick Start
 
 ```dart
-// 1. Create global keys for widgets you want to highlight
-final logoKey = GlobalKey();
-final searchKey = GlobalKey();
+import 'package:flutter_welcome_kit/flutter_welcome_kit.dart';
 
-// 2. Define your tour steps
-final steps = [
-  TourStep(
-    key: logoKey,
-    title: "👋 Welcome!",
-    description: "Let's take a quick tour of the app.",
-    backgroundColor: Colors.blue.shade50,
-  ),
-  TourStep(
-    key: searchKey,
-    title: "Search",
-    description: "Find anything instantly.",
-    backgroundColor: Colors.orange.shade50,
-  ),
-];
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
 
-// 3. Start the tour
-TourController(context: context, steps: steps).start();
+class _MyAppState extends State<MyApp> {
+  // 1. Create GlobalKeys for widgets to highlight
+  final addButtonKey = GlobalKey();
+  final searchKey = GlobalKey();
+  final profileKey = GlobalKey();
+  
+  late TourController _tourController;
+  
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 2. Create the tour controller
+      _tourController = TourController(
+        context: context,
+        steps: [
+          TourStep(
+            key: addButtonKey,
+            title: '➕ Create New',
+            description: 'Tap here to add a new item.',
+            backgroundColor: Colors.blue,
+            animation: StepAnimation.fadeSlideUp,
+            showPulse: true,
+          ),
+          TourStep(
+            key: searchKey,
+            title: '🔍 Search',
+            description: 'Find anything instantly.',
+            backgroundColor: Colors.orange,
+            highlightShape: HighlightShape.circle,
+          ),
+          TourStep(
+            key: profileKey,
+            title: '👤 Your Profile',
+            description: 'Manage your account settings.',
+            backgroundColor: Colors.purple,
+            isLast: true,
+            buttonLabel: 'Get Started!',
+          ),
+        ],
+        onComplete: () => print('Tour finished!'),
+        onSkip: () => print('Tour skipped'),
+      );
+      
+      // 3. Start the tour
+      _tourController.start();
+    });
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            key: searchKey,  // Attach the key
+            icon: Icon(Icons.search),
+            onPressed: () {},
+          ),
+          IconButton(
+            key: profileKey,  // Attach the key
+            icon: Icon(Icons.person),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        key: addButtonKey,  // Attach the key
+        onPressed: () {},
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
 ```
 
-## Customization
+---
 
-![Customization Options](doc/screenshots/comp.jpg)
+## 📚 API Reference
 
+### TourStep
 
-## TourStep Parameters
+Configuration for a single tour step.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `key` | `GlobalKey` | **required** | Widget to highlight |
+| `title` | `String` | **required** | Tooltip title |
+| `description` | `String` | **required** | Tooltip description |
+| `backgroundColor` | `Color` | `Colors.white` | Tooltip background |
+| `duration` | `Duration` | `4 seconds` | Auto-advance delay |
+| `buttonLabel` | `String?` | `"Next"/"Done"` | Button text |
+| `isLast` | `bool` | `false` | Is this the final step? |
+| `animation` | `StepAnimation` | `fadeSlideUp` | Entry animation |
+| `highlightShape` | `HighlightShape` | `rounded` | Spotlight shape |
+| `showPulse` | `bool` | `false` | Show pulse animation |
+| `customContent` | `Widget?` | `null` | Replace description with widget |
+| `showProgress` | `bool` | `true` | Show progress indicator |
+| `progressStyle` | `ProgressIndicatorStyle` | `dots` | Progress style |
+| `showPreviousButton` | `bool` | `true` | Show back button |
+| `showSkipButton` | `bool` | `true` | Show close/skip button |
+| `spotlightPadding` | `double` | `8.0` | Padding around highlight |
+| `spotlightBorderRadius` | `double` | `12.0` | Border radius (rounded shape) |
+| `allowTargetTap` | `bool` | `false` | Tap widget to advance |
+| `preferredPosition` | `TooltipPosition` | `auto` | Force tooltip position |
+| `titleStyle` | `TextStyle?` | `null` | Custom title style |
+| `descriptionStyle` | `TextStyle?` | `null` | Custom description style |
+| `icon` | `IconData?` | `null` | Icon before title |
+| `iconColor` | `Color?` | `null` | Icon color |
+| `onDisplay` | `VoidCallback?` | `null` | Callback fired when step is shown |
+
+---
+
+### TourController
+
+Manages the tour lifecycle.
+
+```dart
+TourController(
+  context: context,
+  steps: steps,
+  
+  // Callbacks
+  onComplete: () {},     // Tour finished
+  onSkip: () {},         // Tour skipped
+  onStepChange: (index, step) {},  // Step changed
+  
+  // Configuration
+  startDelay: Duration(milliseconds: 500),
+  overlayColor: Colors.black.withValues(alpha: 0.7),
+  dismissOnBarrierTap: false,
+);
+```
+
+#### Methods
+
+| Method | Description |
+|--------|-------------|
+| `start()` | Start tour from step 0 |
+| `startFrom(int index)` | Start from specific step |
+| `next()` | Go to next step |
+| `previous()` | Go to previous step |
+| `goToStep(int index)` | Jump to specific step |
+| `skip()` | Skip/end the tour |
+| `end()` | Alias for skip |
+
+#### Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
-| key | GlobalKey | Target widget key |
-| title | String | Tooltip title |
-| description | String | Tooltip content |
-| backgroundColor | Color | Tooltip background color |
-| animation | StepAnimation | Animation type for the tooltip |
-| preferredSide | TooltipSide? | Preferred tooltip position |
-| duration | Duration | Time before auto-advance |
-| buttonLabel | String? | Custom button text |
-| isLast | bool | Marks the last step |
-| pointerPadding | double | Padding around highlighted element |
-| pointerRadius | double | Corner radius of highlight |
+| `currentStepIndex` | `int` | Current step (0-based) |
+| `totalSteps` | `int` | Total number of steps |
+| `isRunning` | `bool` | Is tour currently active |
+| `currentStep` | `TourStep?` | Current step object |
 
-## Available Animations
+---
 
-- `fadeSlideUp`
-- `fadeSlideDown`
-- `fadeSlideLeft`
-- `fadeSlideRight`
-- `scale`
-- `bounce`
-- `rotate`
-- `none`
+### Enums
 
-## Tooltip Positioning
+#### StepAnimation
 
-The toolkit automatically calculates the optimal position for tooltips using these options:
+```dart
+StepAnimation.fadeSlideUp     // Fade + slide from bottom
+StepAnimation.fadeSlideDown   // Fade + slide from top
+StepAnimation.fadeSlideLeft   // Fade + slide from right
+StepAnimation.fadeSlideRight  // Fade + slide from left
+StepAnimation.scale           // Scale up from center
+StepAnimation.bounce          // Elastic bounce
+StepAnimation.rotate          // Rotate while fading
+StepAnimation.fade            // Simple fade in
+StepAnimation.none            // No animation
+```
 
-- `top`
-- `bottom`
-- `left`
-- `right`
-- `topLeft`
-- `topRight`
-- `bottomLeft`
-- `bottomRight`
+#### HighlightShape
 
-## Example Usage
+```dart
+HighlightShape.rounded    // Rounded rectangle (default)
+HighlightShape.circle     // Perfect circle
+HighlightShape.pill       // Capsule/pill shape
+HighlightShape.rectangle  // Sharp corners
+```
+
+#### TooltipPosition
+
+```dart
+TooltipPosition.auto    // Automatic (default)
+TooltipPosition.top     // Force above target
+TooltipPosition.bottom  // Force below target
+TooltipPosition.left    // Force left of target
+TooltipPosition.right   // Force right of target
+```
+
+#### ProgressIndicatorStyle
+
+```dart
+ProgressIndicatorStyle.dots        // ●● ○ ○ (animated dots)
+ProgressIndicatorStyle.text        // "Step 2 of 5"
+ProgressIndicatorStyle.textCompact // "2/5"
+ProgressIndicatorStyle.none        // No indicator
+```
+
+---
+
+## 🎨 Advanced Usage
+
+### Custom Content in Tooltip
 
 ```dart
 TourStep(
-  key: buttonKey,
-  title: "Smart Positioning",
-  description: "Tooltips automatically position themselves optimally!",
-  backgroundColor: Colors.purple.shade50,
-  animation: StepAnimation.bounce,
-  preferredSide: TooltipSide.bottom,
-  pointerPadding: 30,
-  pointerRadius: 28,
-  duration: const Duration(seconds: 4),
-  isLast: false,
+  key: profileKey,
+  title: 'Complete Your Profile',
+  description: '',
+  customContent: Column(
+    children: [
+      CircleAvatar(radius: 30, child: Icon(Icons.person)),
+      SizedBox(height: 12),
+      Text('Add a photo to personalize your account'),
+      SizedBox(height: 8),
+      OutlinedButton(
+        onPressed: () {},
+        child: Text('Upload Photo'),
+      ),
+    ],
+  ),
 )
 ```
 
+### Different Shapes Demo
 
-## Contributing
+```dart
+// Circle - great for FABs and icons
+TourStep(
+  key: fabKey,
+  highlightShape: HighlightShape.circle,
+  spotlightPadding: 4,
+  ...
+)
 
-PRs welcome! Feel free to submit issues, suggestions, or improvements.
+// Pill - great for buttons and chips
+TourStep(
+  key: buttonKey,
+  highlightShape: HighlightShape.pill,
+  ...
+)
+
+// Rounded - great for cards
+TourStep(
+  key: cardKey,
+  highlightShape: HighlightShape.rounded,
+  spotlightBorderRadius: 16,
+  ...
+)
+```
+
+### Callbacks for Analytics
+
+```dart
+TourController(
+  context: context,
+  steps: steps,
+  onStepChange: (index, step) {
+    analytics.logEvent('tour_step', {
+      'step_index': index,
+      'step_title': step.title,
+    });
+  },
+  onComplete: () {
+    analytics.logEvent('tour_completed');
+    prefs.setBool('has_seen_tour', true);
+  },
+  onSkip: () {
+    analytics.logEvent('tour_skipped');
+  },
+);
+```
+
+### Feature Discovery with onDisplay
+
+Use the `onDisplay` callback to track when users see specific features — perfect for progressive disclosure and feature discovery UX patterns:
+
+```dart
+// Track which features users have discovered
+final Set<String> discoveredFeatures = {};
+
+void markFeatureSeen(String featureId) {
+  discoveredFeatures.add(featureId);
+  prefs.setStringList('discovered_features', discoveredFeatures.toList());
+}
+
+// In your tour steps:
+TourStep(
+  key: inboxKey,
+  title: 'Inbox',
+  description: 'You can access incoming messages here.',
+  onDisplay: () => markFeatureSeen('inbox'),
+),
+TourStep(
+  key: settingsKey,
+  title: 'Settings',
+  description: 'Customize your app preferences.',
+  onDisplay: () => markFeatureSeen('settings'),
+),
+```
+
+---
+
+## ⌨️ Keyboard Navigation
+
+| Key | Action |
+|-----|--------|
+| `Enter` / `Space` | Next step |
+| `←` / `↑` | Previous step |
+| `ESC` | Skip tour |
+
+---
+
+## 🔧 Troubleshooting
+
+### Widget not highlighting?
+
+Make sure the `GlobalKey` is attached to a widget that's currently visible:
+
+```dart
+// ✅ Correct - key is on a visible widget
+IconButton(
+  key: myKey,
+  icon: Icon(Icons.star),
+  ...
+)
+
+// ❌ Wrong - key is on a widget inside a closed menu
+PopupMenuItem(
+  key: myKey,  // Won't work if menu is closed!
+  ...
+)
+```
+
+### Tour starts before UI is ready?
+
+Use `startDelay` to wait for widgets to render:
+
+```dart
+TourController(
+  ...
+  startDelay: Duration(milliseconds: 500),
+);
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+## 👨‍💻 Author
+
+**Mohammad Usman**
+
+- GitHub: [@Usman-bhat](https://github.com/Usman-bhat)
+- Package: [pub.dev/packages/flutter_welcome_kit](https://pub.dev/packages/flutter_welcome_kit)

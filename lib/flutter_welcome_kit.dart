@@ -1,8 +1,15 @@
-// File: lib/onboarding_tour.dart
+/// Flutter Welcome Kit - A beautiful, customizable onboarding/tour guide kit
+///
+/// Provides spotlight overlays, animated tooltips, and step-by-step guidance
+/// for Flutter apps. Perfect for tutorials and product tours.
+library flutter_welcome_kit;
 
-library;
-
-export '/core/tour_controller.dart';
+// Core exports
+export 'core/enums.dart';
+export 'core/tour_controller.dart';
 export 'core/tour_step.dart';
-export '/widgets/spotlight.dart';
-export '/widgets/tooltip_card.dart';
+
+// Widget exports
+export 'widgets/spotlight.dart';
+export 'widgets/tooltip_card.dart';
+export 'widgets/progress_indicator.dart';

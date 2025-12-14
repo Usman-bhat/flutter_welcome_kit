@@ -1,79 +1,73 @@
-// File: example/lib/main.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_welcome_kit/flutter_welcome_kit.dart';
 
 void main() {
-  runApp(const MyApp());
-}
+  group('Flutter Welcome Kit Tests', () {
+    testWidgets('TourStep creates with required parameters', (tester) async {
+      final key = GlobalKey();
+      final step = TourStep(
+        key: key,
+        title: 'Test Title',
+        description: 'Test Description',
+      );
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+      expect(step.title, 'Test Title');
+      expect(step.description, 'Test Description');
+      expect(step.isLast, false);
+      expect(step.animation, StepAnimation.fadeSlideUp);
+      expect(step.highlightShape, HighlightShape.rounded);
+      expect(step.showProgress, true);
+      expect(step.showPreviousButton, true);
+      expect(step.showSkipButton, true);
+    });
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Welcome Kit Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomePage(),
-    );
-  }
-}
+    testWidgets('TourController initializes correctly', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              final key = GlobalKey();
+              final controller = TourController(
+                context: context,
+                steps: [
+                  TourStep(
+                    key: key,
+                    title: 'Step 1',
+                    description: 'First step',
+                  ),
+                ],
+              );
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+              expect(controller.totalSteps, 1);
+              expect(controller.currentStepIndex, 0);
+              expect(controller.isRunning, false);
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final GlobalKey _buttonKey = GlobalKey();
-  final GlobalKey _textKey = GlobalKey();
-
-  late TourController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller = TourController(
-        context: context,
-        steps: [
-          TourStep(
-            key: _textKey,
-            title: "Welcome!",
-            description: "This is an introductory message.",
+              return const Scaffold(body: Text('Test'));
+            },
           ),
-          TourStep(
-            key: _buttonKey,
-            title: "Start Button",
-            description: "Click this button to begin your journey.",
-            alignment: TourAlignment.top,
-          ),
-        ],
+        ),
       );
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Welcome Kit Example')),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text("Hello there!", key: _textKey),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              key: _buttonKey,
-              onPressed: () => _controller.start(),
-              child: const Text("Show Tour"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    test('StepAnimation enum has all values', () {
+      expect(StepAnimation.values.length, 9);
+      expect(StepAnimation.values.contains(StepAnimation.fadeSlideUp), true);
+      expect(StepAnimation.values.contains(StepAnimation.bounce), true);
+      expect(StepAnimation.values.contains(StepAnimation.none), true);
+    });
+
+    test('HighlightShape enum has all values', () {
+      expect(HighlightShape.values.length, 4);
+      expect(HighlightShape.values.contains(HighlightShape.circle), true);
+      expect(HighlightShape.values.contains(HighlightShape.pill), true);
+      expect(HighlightShape.values.contains(HighlightShape.rounded), true);
+    });
+
+    test('ProgressIndicatorStyle enum has all values', () {
+      expect(ProgressIndicatorStyle.values.length, 4);
+      expect(ProgressIndicatorStyle.values.contains(ProgressIndicatorStyle.dots), true);
+      expect(ProgressIndicatorStyle.values.contains(ProgressIndicatorStyle.text), true);
+    });
+  });
 }

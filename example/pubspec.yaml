@@ -14,9 +14,8 @@ dependencies:
   flutter:
     sdk: flutter
     
-  flutter_welcome_kit: ^1.0.0
-  # flutter_welcome_kit:
-  #   path: ../
+  flutter_welcome_kit:
+    path: ../
 
   cupertino_icons: ^1.0.8
 

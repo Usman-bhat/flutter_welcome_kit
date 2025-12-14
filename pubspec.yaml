@@ -1,13 +1,13 @@
 name: flutter_welcome_kit
-description: A lightweight and customizable onboarding tour guide for Flutter apps with spotlight overlays and step-by-step tooltips.
-version: 1.0.0
+description: A beautiful, customizable onboarding/tour guide kit for Flutter apps with spotlight overlays, animations, and step-by-step tooltips.
+version: 2.0.0
 homepage: https://github.com/Usman-bhat/flutter_welcome_kit
 repository: https://github.com/Usman-bhat/flutter_welcome_kit
 issue_tracker: https://github.com/Usman-bhat/flutter_welcome_kit/issues
 documentation: https://github.com/Usman-bhat/flutter_welcome_kit/wiki
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'  # Update this line
+  sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0"
 
 dependencies:
@@ -31,5 +31,5 @@ topics:
   - tour
   - tooltip
   - guide
-
-
+  - walkthrough
+  - product-tour
