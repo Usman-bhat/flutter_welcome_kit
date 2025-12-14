@@ -21,15 +21,11 @@ dev_dependencies:
 
 screenshots:
   - description: 'Welcome Kit Demo'
-    path: doc/screenshots/demo.gif
-  - description: 'Customization options'
-    path: doc/screenshots/comp.jpg
+    path: doc/screenshots/demo.webp
 
 topics:
   - onboarding
   - tutorial
-  - tour
   - tooltip
-  - guide
   - walkthrough
-  - product-tour
+  - ui
