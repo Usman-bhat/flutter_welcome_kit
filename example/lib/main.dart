@@ -113,7 +113,7 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
           animation: StepAnimation.fadeSlideDown,
           highlightShape: HighlightShape.circle,
           duration: const Duration(seconds: 10),
-          barrierDismissible: false,
+          dismissOnBarrierTap: false,
         ),
         TourStep(
           key: _searchKey,

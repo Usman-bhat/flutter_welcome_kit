@@ -282,10 +282,8 @@ class _TooltipCardState extends State<TooltipCard>
     final (cardPosition, arrowDir) = _calculatePositionAndArrow(screenSize);
     final arrowOffset = _calculateArrowOffset(cardPosition, arrowDir);
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = widget.step.backgroundColor != Colors.white
-        ? widget.step.backgroundColor
-        : (isDark ? Colors.grey[850]! : Colors.white);
+    final cardColor =
+        widget.step.backgroundColor ?? Theme.of(context).primaryColor;
     final textColor = _getContrastingTextColor(cardColor);
 
     final buttonLabel =
@@ -316,8 +314,8 @@ class _TooltipCardState extends State<TooltipCard>
         children: [
           // Invisible tap catcher for dismissing
           GestureDetector(
-            onTap: widget.dismissOnBarrierTap ? widget.onSkip : null,
-            behavior: HitTestBehavior.translucent,
+            onTap: widget.dismissOnBarrierTap ? widget.onSkip : () {},
+            behavior: HitTestBehavior.opaque,
             child: Container(
               width: screenSize.width,
               height: screenSize.height,
@@ -423,23 +421,34 @@ class _TooltipCardState extends State<TooltipCard>
                   // Don't show again button
                   Flexible(
                     flex: 3,
-                    child: TextButton(
-                      onPressed: () {
-                        widget.step.onDontShowAgain?.call();
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: textColor.withValues(alpha: 0.7),
-                        padding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
-                        alignment: Alignment.centerLeft,
-                      ),
-                      child: Text(
-                        widget.step.dontShowAgainText,
-                        style: const TextStyle(fontSize: 12),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
+                    child: widget.step.onDontShowAgain == null
+                        ? const SizedBox.shrink()
+                        : FilledButton.tonal(
+                            onPressed: widget.step.onDontShowAgain,
+                            style: widget.step.dontShowAgainStyle ??
+                                FilledButton.styleFrom(
+                                  backgroundColor:
+                                      textColor.withValues(alpha: 0.1),
+                                  foregroundColor: textColor,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  textStyle: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                            child: Text(
+                              widget.step.dontShowAgainText,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
                   ),
                   const SizedBox(width: 4),
                   // Navigation controls on the right

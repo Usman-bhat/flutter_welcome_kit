@@ -15,11 +15,11 @@ class TourStep {
   /// Description text displayed in the tooltip body
   final String description;
 
-  /// Background color of the tooltip card
-  final Color backgroundColor;
+  /// Background color of the tooltip card. If null, uses primary color.
+  final Color? backgroundColor;
 
   /// How long to show this step before auto-advancing
-  /// If null, wait for user interaction
+  /// If null, wait for user interaction (default)
   final Duration? duration;
 
   /// Custom label for the primary button (defaults to "Next" or "Done")
@@ -83,7 +83,7 @@ class TourStep {
   final VoidCallback? onDisplay;
 
   /// Whether the tour can be dismissed by tapping outside the tooltip
-  final bool barrierDismissible;
+  final bool dismissOnBarrierTap;
 
   /// Whether to show a close button in the title area
   final bool showCloseButton;
@@ -94,12 +94,15 @@ class TourStep {
   /// Callback for the "Don't show again" button
   final VoidCallback? onDontShowAgain;
 
+  /// Custom style for the "Don't show again" button
+  final ButtonStyle? dontShowAgainStyle;
+
   const TourStep({
     required this.key,
     required this.title,
     required this.description,
-    this.backgroundColor = Colors.white,
-    this.duration = const Duration(seconds: 4),
+    this.backgroundColor,
+    this.duration,
     this.buttonLabel,
     this.isLast = false,
     // v2.0 defaults
@@ -120,9 +123,10 @@ class TourStep {
     this.icon,
     this.iconColor,
     this.onDisplay,
-    this.barrierDismissible = true,
+    this.dismissOnBarrierTap = true,
     this.showCloseButton = false,
     this.dontShowAgainText = 'Bir daha gösterme',
     this.onDontShowAgain,
+    this.dontShowAgainStyle,
   });
 }
