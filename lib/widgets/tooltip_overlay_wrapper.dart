@@ -37,8 +37,13 @@ class _TooltipOverlayWrapperState extends State<TooltipOverlayWrapper> {
   @override
   void initState() {
     super.initState();
-    if (!widget.step.isLast) {
-      _timer = Timer(widget.step.duration, widget.onNext);
+    // Auto-advance if not last step and duration is set
+    if (!widget.step.isLast && widget.step.duration != null) {
+      Future.delayed(widget.step.duration!, () {
+        if (mounted) {
+          widget.onNext();
+        }
+      });
     }
   }
 

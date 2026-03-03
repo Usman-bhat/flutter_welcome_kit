@@ -67,10 +67,9 @@ class TourController {
   bool get isRunning => _isRunning;
 
   /// Current step being displayed
-  TourStep? get currentStep =>
-      _isRunning && _currentStepIndex < steps.length
-          ? steps[_currentStepIndex]
-          : null;
+  TourStep? get currentStep => _isRunning && _currentStepIndex < steps.length
+      ? steps[_currentStepIndex]
+      : null;
 
   /// Start the tour from the beginning
   Future<void> start() async {
@@ -149,8 +148,7 @@ class TourController {
     _overlayEntry?.remove();
 
     final step = steps[_currentStepIndex];
-    final renderBox =
-        step.key.currentContext?.findRenderObject() as RenderBox?;
+    final renderBox = step.key.currentContext?.findRenderObject() as RenderBox?;
     final overlay = Overlay.of(context);
 
     if (renderBox == null) return;
@@ -180,6 +178,7 @@ class TourController {
             onNext: next,
             onPrevious: previous,
             onSkip: skip,
+            dismissOnBarrierTap: step.barrierDismissible,
           ),
         ],
       ),

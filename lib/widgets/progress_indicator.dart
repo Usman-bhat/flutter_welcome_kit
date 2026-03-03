@@ -81,14 +81,17 @@ class TourProgressIndicator extends StatelessWidget {
   }
 
   Widget _buildText(String text) {
-    return Text(
-      text,
-      style: textStyle ??
-          TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: activeColor.withValues(alpha: 0.8),
-          ),
+    return Material(
+      color: Colors.transparent,
+      child: Text(
+        text,
+        style: textStyle ??
+            TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: activeColor.withValues(alpha: 0.8),
+            ),
+      ),
     );
   }
 }

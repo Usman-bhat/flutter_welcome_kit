@@ -48,9 +48,13 @@ class TooltipCard extends StatefulWidget {
     required this.onNext,
     required this.onPrevious,
     required this.onSkip,
+    this.dismissOnBarrierTap = true,
     this.animationDuration = const Duration(milliseconds: 400),
     this.animationCurve = Curves.easeOutCubic,
   });
+
+  /// Whether to dismiss the tour when tapping outside the tooltip
+  final bool dismissOnBarrierTap;
 
   @override
   State<TooltipCard> createState() => _TooltipCardState();
@@ -73,10 +77,10 @@ class _TooltipCardState extends State<TooltipCard>
     super.initState();
     _setupAnimations();
     _controller.forward();
-    
+
     // Auto-advance if not last step and duration is set
-    if (!widget.step.isLast) {
-      Future.delayed(widget.step.duration, () {
+    if (!widget.step.isLast && widget.step.duration != null) {
+      Future.delayed(widget.step.duration!, () {
         if (mounted) {
           widget.onNext();
         }
@@ -121,8 +125,8 @@ class _TooltipCardState extends State<TooltipCard>
       default:
         slideBegin = Offset.zero;
     }
-    _slideAnimation = Tween<Offset>(begin: slideBegin, end: Offset.zero)
-        .animate(curve);
+    _slideAnimation =
+        Tween<Offset>(begin: slideBegin, end: Offset.zero).animate(curve);
   }
 
   @override
@@ -132,7 +136,8 @@ class _TooltipCardState extends State<TooltipCard>
   }
 
   /// Calculate the best position for the tooltip and arrow direction
-  (Offset position, ArrowDirection arrowDir) _calculatePositionAndArrow(Size screenSize) {
+  (Offset position, ArrowDirection arrowDir) _calculatePositionAndArrow(
+      Size screenSize) {
     if (screenSize.width <= 0 || screenSize.height <= 0) {
       return (Offset.zero, ArrowDirection.up);
     }
@@ -195,7 +200,8 @@ class _TooltipCardState extends State<TooltipCard>
 
     // Clamp position to screen bounds
     dx = dx.clamp(_cardPadding, screenSize.width - _cardWidth - _cardPadding);
-    dy = dy.clamp(_cardPadding, screenSize.height - estimatedCardHeight - _cardPadding);
+    dy = dy.clamp(
+        _cardPadding, screenSize.height - estimatedCardHeight - _cardPadding);
 
     return (Offset(dx, dy), arrowDir);
   }
@@ -203,24 +209,28 @@ class _TooltipCardState extends State<TooltipCard>
   /// Calculate arrow position on the card edge pointing toward the target
   Offset _calculateArrowOffset(Offset cardPosition, ArrowDirection arrowDir) {
     final targetCenter = widget.targetRect.center;
-    
+
     switch (arrowDir) {
       case ArrowDirection.up:
         // Arrow at top of card, pointing up toward target
-        final arrowX = (targetCenter.dx - cardPosition.dx).clamp(20.0, _cardWidth - 20.0);
+        final arrowX =
+            (targetCenter.dx - cardPosition.dx).clamp(20.0, _cardWidth - 20.0);
         return Offset(arrowX - _arrowSize / 2, -_arrowSize);
       case ArrowDirection.down:
         // Arrow at bottom of card, pointing down toward target
-        final arrowX = (targetCenter.dx - cardPosition.dx).clamp(20.0, _cardWidth - 20.0);
-        return Offset(arrowX - _arrowSize / 2, -1); // Will be positioned at bottom in build
+        final arrowX =
+            (targetCenter.dx - cardPosition.dx).clamp(20.0, _cardWidth - 20.0);
+        return Offset(arrowX - _arrowSize / 2,
+            -1); // Will be positioned at bottom in build
       case ArrowDirection.left:
         // Arrow at left of card, pointing left toward target
         final arrowY = (targetCenter.dy - cardPosition.dy).clamp(30.0, 150.0);
         return Offset(-_arrowSize, arrowY - _arrowSize / 2);
       case ArrowDirection.right:
-        // Arrow at right of card, pointing right toward target  
+        // Arrow at right of card, pointing right toward target
         final arrowY = (targetCenter.dy - cardPosition.dy).clamp(30.0, 150.0);
-        return Offset(-1, arrowY - _arrowSize / 2); // Will be positioned at right in build
+        return Offset(-1,
+            arrowY - _arrowSize / 2); // Will be positioned at right in build
     }
   }
 
@@ -278,8 +288,8 @@ class _TooltipCardState extends State<TooltipCard>
         : (isDark ? Colors.grey[850]! : Colors.white);
     final textColor = _getContrastingTextColor(cardColor);
 
-    final buttonLabel = widget.step.buttonLabel ??
-        (widget.step.isLast ? 'Done' : 'Next');
+    final buttonLabel =
+        widget.step.buttonLabel ?? (widget.step.isLast ? 'Done' : 'Next');
 
     final isFirstStep = widget.currentStepIndex == 0;
 
@@ -306,7 +316,7 @@ class _TooltipCardState extends State<TooltipCard>
         children: [
           // Invisible tap catcher for dismissing
           GestureDetector(
-            onTap: widget.onSkip,
+            onTap: widget.dismissOnBarrierTap ? widget.onSkip : null,
             behavior: HitTestBehavior.translucent,
             child: Container(
               width: screenSize.width,
@@ -320,7 +330,8 @@ class _TooltipCardState extends State<TooltipCard>
             top: cardPosition.dy,
             left: cardPosition.dx,
             child: _buildAnimatedContent(
-              _buildCard(cardColor, textColor, buttonLabel, isFirstStep, arrowDir, arrowOffset),
+              _buildCard(cardColor, textColor, buttonLabel, isFirstStep,
+                  arrowDir, arrowOffset),
             ),
           ),
         ],
@@ -328,7 +339,7 @@ class _TooltipCardState extends State<TooltipCard>
     );
   }
 
-  Widget _buildCard(Color cardColor, Color textColor, String buttonLabel, 
+  Widget _buildCard(Color cardColor, Color textColor, String buttonLabel,
       bool isFirstStep, ArrowDirection arrowDir, Offset arrowOffset) {
     return Stack(
       clipBehavior: Clip.none,
@@ -352,7 +363,7 @@ class _TooltipCardState extends State<TooltipCard>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row with title and close button
+              // Header row with title and close/skip button
               Row(
                 children: [
                   if (widget.step.icon != null)
@@ -368,16 +379,13 @@ class _TooltipCardState extends State<TooltipCard>
                     child: Text(
                       widget.step.title,
                       style: widget.step.titleStyle ??
-                          Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
+                          Theme.of(context).textTheme.titleMedium?.copyWith(
                                 color: textColor,
                                 fontWeight: FontWeight.bold,
                               ),
                     ),
                   ),
-                  if (widget.step.showSkipButton)
+                  if (widget.step.showCloseButton)
                     IconButton(
                       onPressed: widget.onSkip,
                       icon: const Icon(Icons.close),
@@ -387,7 +395,7 @@ class _TooltipCardState extends State<TooltipCard>
                         minWidth: 28,
                         minHeight: 28,
                       ),
-                      tooltip: 'Skip tour',
+                      tooltip: widget.step.showCloseButton ? 'Close' : 'Skip',
                       color: textColor.withValues(alpha: 0.6),
                     ),
                 ],
@@ -401,77 +409,73 @@ class _TooltipCardState extends State<TooltipCard>
                 Text(
                   widget.step.description,
                   style: widget.step.descriptionStyle ??
-                      Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(
+                      Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: textColor.withValues(alpha: 0.8),
                           ),
                 ),
 
               const SizedBox(height: 16),
 
-              // Progress indicator
-              if (widget.step.showProgress)
-                Center(
-                  child: TourProgressIndicator(
-                    currentStep: widget.currentStepIndex,
-                    totalSteps: widget.totalSteps,
-                    style: widget.step.progressStyle,
-                    activeColor: textColor,
-                    inactiveColor: textColor.withValues(alpha: 0.3),
-                  ),
-                ),
-
-              if (widget.step.showProgress)
-                const SizedBox(height: 12),
-
-              // Button row
+              // New Navigation Layout
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // Previous button
-                  if (widget.step.showPreviousButton && !isFirstStep)
-                    TextButton(
-                      onPressed: widget.onPrevious,
+                  // Don't show again button
+                  Flexible(
+                    flex: 3,
+                    child: TextButton(
+                      onPressed: () {
+                        widget.step.onDontShowAgain?.call();
+                      },
                       style: TextButton.styleFrom(
                         foregroundColor: textColor.withValues(alpha: 0.7),
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: EdgeInsets.zero,
+                        visualDensity: VisualDensity.compact,
+                        alignment: Alignment.centerLeft,
                       ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.arrow_back_ios, size: 14),
-                          SizedBox(width: 4),
-                          Text('Back'),
-                        ],
+                      child: Text(
+                        widget.step.dontShowAgainText,
+                        style: const TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
-                    )
-                  else
-                    const SizedBox.shrink(),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  // Navigation controls on the right
 
-                  // Next/Done button
-                  ElevatedButton(
-                    onPressed: widget.onNext,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _getButtonColor(cardColor),
-                      foregroundColor: _getButtonTextColor(cardColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Previous arrow (Left-facing arrow)
+                      IconButton(
+                        onPressed: isFirstStep ? null : widget.onPrevious,
+                        icon: const Icon(Icons.arrow_back_ios_new),
+                        iconSize: 14,
+                        color: textColor.withValues(
+                            alpha: isFirstStep ? 0.3 : 1.0),
+                        padding: const EdgeInsets.all(8),
+                        constraints: const BoxConstraints(),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(buttonLabel),
-                        if (!widget.step.isLast) ...[
-                          const SizedBox(width: 4),
-                          const Icon(Icons.arrow_forward_ios, size: 14),
-                        ],
-                      ],
-                    ),
+                      // Progress indicator / total (e.g. 1/5)
+                      if (widget.step.showProgress)
+                        TourProgressIndicator(
+                          currentStep: widget.currentStepIndex,
+                          totalSteps: widget.totalSteps,
+                          style: ProgressIndicatorStyle.textCompact,
+                          activeColor: textColor,
+                          inactiveColor: textColor.withValues(alpha: 0.3),
+                        ),
+                      // Next arrow (Right-facing arrow)
+                      IconButton(
+                        onPressed: widget.onNext,
+                        icon: const Icon(Icons.arrow_forward_ios),
+                        iconSize: 14,
+                        color: textColor,
+                        padding: const EdgeInsets.all(8),
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -488,7 +492,7 @@ class _TooltipCardState extends State<TooltipCard>
   Widget _buildArrow(ArrowDirection direction, Offset offset, Color color) {
     // Position the arrow at the correct edge of the card
     double? top, left, bottom, right;
-    
+
     switch (direction) {
       case ArrowDirection.up:
         top = offset.dy;
@@ -526,16 +530,6 @@ class _TooltipCardState extends State<TooltipCard>
   Color _getContrastingTextColor(Color background) {
     final luminance = background.computeLuminance();
     return luminance > 0.5 ? Colors.black87 : Colors.white;
-  }
-
-  Color _getButtonColor(Color cardColor) {
-    final luminance = cardColor.computeLuminance();
-    return luminance > 0.5 ? Colors.black87 : Colors.white;
-  }
-
-  Color _getButtonTextColor(Color cardColor) {
-    final luminance = cardColor.computeLuminance();
-    return luminance > 0.5 ? Colors.white : Colors.black87;
   }
 }
 

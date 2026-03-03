@@ -91,46 +91,59 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
         TourStep(
           key: _addTaskKey,
           title: '➕ Create Tasks',
-          description: 'Tap here to add a new task to your list. You can set priority levels and due dates.',
+          description:
+              'Tap here to add a new task. This step has NO duration, so it waits for you!',
           backgroundColor: Colors.indigo,
           animation: StepAnimation.fadeSlideUp,
           highlightShape: HighlightShape.circle,
           showPulse: true,
-          duration: const Duration(seconds: 6),
+          duration: null, // Waits for user interaction
+          showCloseButton: false,
+          showProgress: true,
+          onDontShowAgain: () {
+            debugPrint('User clicked: Don\'t show again on Step 1');
+          },
         ),
         TourStep(
           key: _filterKey,
           title: '🔍 Filter Tasks',
-          description: 'Filter your tasks by status, priority, or date to focus on what matters.',
+          description:
+              'This step is NOT dismissible by clicking the background. You must use the buttons!',
           backgroundColor: Colors.teal,
           animation: StepAnimation.fadeSlideDown,
           highlightShape: HighlightShape.circle,
-          duration: const Duration(seconds: 6),
+          duration: const Duration(seconds: 10),
+          barrierDismissible: false,
         ),
         TourStep(
           key: _searchKey,
           title: '🔎 Quick Search',
-          description: 'Instantly find any task by typing keywords. Works across all your projects.',
+          description:
+              'We hid the progress indicator (dots/text) for this step just to show we can!',
           backgroundColor: Colors.orange,
           animation: StepAnimation.scale,
           highlightShape: HighlightShape.circle,
           showPulse: true,
           duration: const Duration(seconds: 6),
+          showProgress: false,
         ),
         TourStep(
           key: _taskCardKey,
           title: '📋 Task Cards',
-          description: 'Each task shows its title, priority, and completion status at a glance.',
+          description:
+              'Each task shows its title, priority, and completion status at a glance.',
           backgroundColor: Colors.purple,
           animation: StepAnimation.fadeSlideLeft,
           highlightShape: HighlightShape.rounded,
           spotlightPadding: 4,
           duration: const Duration(seconds: 6),
+          dontShowAgainText: 'Kapat ve bir daha açma',
         ),
         TourStep(
           key: _priorityBadgeKey,
           title: '🏷️ Priority Badges',
-          description: 'Color-coded badges help you identify urgent tasks quickly.',
+          description:
+              'Color-coded badges help you identify urgent tasks quickly.',
           backgroundColor: Colors.red.shade700,
           animation: StepAnimation.bounce,
           highlightShape: HighlightShape.pill,
@@ -140,7 +153,8 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
         TourStep(
           key: _checkboxKey,
           title: '✓ Complete Tasks',
-          description: 'Tap the checkbox to mark a task as complete. Your progress is saved automatically.',
+          description:
+              'Tap the checkbox to mark a task as complete. Your progress is saved automatically.',
           backgroundColor: Colors.green,
           animation: StepAnimation.scale,
           highlightShape: HighlightShape.circle,
@@ -149,7 +163,8 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
         TourStep(
           key: _statsCardKey,
           title: '📊 Your Progress',
-          description: 'Track your productivity with real-time statistics and insights.',
+          description:
+              'Track your productivity with real-time statistics and insights.',
           backgroundColor: Colors.blue,
           animation: StepAnimation.fadeSlideUp,
           highlightShape: HighlightShape.rounded,
@@ -255,7 +270,8 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
                             value: completedCount / totalCount,
                             strokeWidth: 6,
                             backgroundColor: Colors.grey[800],
-                            valueColor: const AlwaysStoppedAnimation(Colors.green),
+                            valueColor:
+                                const AlwaysStoppedAnimation(Colors.green),
                           ),
                           Center(
                             child: Text(
@@ -306,7 +322,7 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
                 itemBuilder: (context, index) {
                   final task = _tasks[index];
                   final isFirstTask = index == 0;
-                  
+
                   return Card(
                     key: isFirstTask ? _taskCardKey : null,
                     margin: const EdgeInsets.only(bottom: 8),
@@ -327,12 +343,9 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
                       title: Text(
                         task['title'],
                         style: TextStyle(
-                          decoration: task['done'] 
-                              ? TextDecoration.lineThrough 
-                              : null,
-                          color: task['done'] 
-                              ? Colors.grey 
-                              : Colors.white,
+                          decoration:
+                              task['done'] ? TextDecoration.lineThrough : null,
+                          color: task['done'] ? Colors.grey : Colors.white,
                         ),
                       ),
                       trailing: Container(
