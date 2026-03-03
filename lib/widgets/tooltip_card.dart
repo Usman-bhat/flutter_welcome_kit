@@ -416,57 +416,62 @@ class _TooltipCardState extends State<TooltipCard>
 
               // New Navigation Layout
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Don't show again button
                   Flexible(
                     flex: 3,
-                    child: widget.step.onDontShowAgain == null
-                        ? const SizedBox.shrink()
-                        : FilledButton.tonal(
-                            onPressed: widget.step.onDontShowAgain,
-                            style: widget.step.dontShowAgainStyle ??
-                                FilledButton.styleFrom(
-                                  backgroundColor:
-                                      textColor.withValues(alpha: 0.1),
-                                  foregroundColor: textColor,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  textStyle: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                            child: Text(
-                              widget.step.dontShowAgainText,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
+                    child: FilledButton.tonal(
+                      onPressed: widget.step.onDontShowAgain ?? widget.onSkip,
+                      style: widget.step.dontShowAgainStyle ??
+                          FilledButton.styleFrom(
+                            backgroundColor: textColor.withValues(alpha: 0.1),
+                            foregroundColor: textColor,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            textStyle: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
+                      child: Text(
+                        widget.step.dontShowAgainText,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 4),
-                  // Navigation controls on the right
 
                   Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       // Previous arrow (Left-facing arrow)
                       IconButton(
                         onPressed: isFirstStep ? null : widget.onPrevious,
                         icon: const Icon(Icons.arrow_back_ios_new),
-                        iconSize: 14,
+                        iconSize: 10,
                         color: textColor.withValues(
                             alpha: isFirstStep ? 0.3 : 1.0),
-                        padding: const EdgeInsets.all(8),
-                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.all(0),
+                        constraints: const BoxConstraints(
+                          maxHeight: 24,
+                          maxWidth: 24,
+                          minHeight: 24,
+                          minWidth: 24,
+                        ),
+                        style: IconButton.styleFrom(
+                          padding: const EdgeInsets.all(0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
                       ),
-                      // Progress indicator / total (e.g. 1/5)
+
                       if (widget.step.showProgress)
                         TourProgressIndicator(
                           currentStep: widget.currentStepIndex,
@@ -475,14 +480,22 @@ class _TooltipCardState extends State<TooltipCard>
                           activeColor: textColor,
                           inactiveColor: textColor.withValues(alpha: 0.3),
                         ),
-                      // Next arrow (Right-facing arrow)
                       IconButton(
                         onPressed: widget.onNext,
                         icon: const Icon(Icons.arrow_forward_ios),
-                        iconSize: 14,
+                        iconSize: 10,
                         color: textColor,
-                        padding: const EdgeInsets.all(8),
-                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.all(0),
+                        constraints: const BoxConstraints(
+                          maxHeight: 24,
+                          maxWidth: 24,
+                          minHeight: 24,
+                          minWidth: 24,
+                        ),
+                        style: IconButton.styleFrom(
+                          padding: const EdgeInsets.all(0),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
                       ),
                     ],
                   ),

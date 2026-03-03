@@ -100,9 +100,7 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
           duration: null, // Waits for user interaction
           showCloseButton: false,
           showProgress: true,
-          onDontShowAgain: () {
-            debugPrint('User clicked: Don\'t show again on Step 1');
-          },
+          onDontShowAgain: null,
         ),
         TourStep(
           key: _filterKey,
