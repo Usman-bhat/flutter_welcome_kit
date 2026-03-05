@@ -439,8 +439,11 @@ class _TooltipCardState extends State<TooltipCard>
                         child: Text(
                           widget.step.dontShowAgainText,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodySmall,
-                          maxLines: 2,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: textColor,
+                                  ),
+                          maxLines: 1,
                         ),
                       ),
                     ),
@@ -453,24 +456,25 @@ class _TooltipCardState extends State<TooltipCard>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Previous arrow (Left-facing arrow)
-                      IconButton(
-                        onPressed: isFirstStep ? null : widget.onPrevious,
-                        icon: const Icon(Icons.chevron_left),
-                        iconSize: 16,
-                        color: textColor.withValues(
-                            alpha: isFirstStep ? 0.3 : 1.0),
-                        padding: const EdgeInsets.all(0),
-                        constraints: const BoxConstraints(
-                          maxHeight: 24,
-                          maxWidth: 24,
-                          minHeight: 24,
-                          minWidth: 24,
-                        ),
-                        style: IconButton.styleFrom(
+                      if (!isFirstStep)
+                        IconButton(
+                          onPressed: widget.onPrevious,
+                          icon: const Icon(Icons.chevron_left),
+                          iconSize: 16,
+                          color: textColor.withValues(
+                              alpha: isFirstStep ? 0.3 : 1.0),
                           padding: const EdgeInsets.all(0),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          constraints: const BoxConstraints(
+                            maxHeight: 24,
+                            maxWidth: 24,
+                            minHeight: 24,
+                            minWidth: 24,
+                          ),
+                          style: IconButton.styleFrom(
+                            padding: const EdgeInsets.all(0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                         ),
-                      ),
 
                       if (widget.step.showProgress)
                         Padding(
@@ -479,6 +483,7 @@ class _TooltipCardState extends State<TooltipCard>
                             currentStep: widget.currentStepIndex,
                             totalSteps: widget.totalSteps,
                             style: ProgressIndicatorStyle.textCompact,
+                            textStyle: TextStyle(color: textColor),
                             activeColor: textColor,
                             inactiveColor: textColor.withValues(alpha: 0.3),
                           ),
