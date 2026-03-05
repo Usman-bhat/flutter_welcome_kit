@@ -82,9 +82,6 @@ class TourStep {
   /// Useful for feature discovery - mark steps as "seen" by the user.
   final VoidCallback? onDisplay;
 
-  /// Whether the tour can be dismissed by tapping outside the tooltip
-  final bool dismissOnBarrierTap;
-
   /// Whether to show a close button in the title area
   final bool showCloseButton;
 
@@ -123,7 +120,6 @@ class TourStep {
     this.icon,
     this.iconColor,
     this.onDisplay,
-    this.dismissOnBarrierTap = true,
     this.showCloseButton = false,
     this.dontShowAgainText = 'Bir daha gösterme',
     this.onDontShowAgain,

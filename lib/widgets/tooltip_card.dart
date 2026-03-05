@@ -419,8 +419,7 @@ class _TooltipCardState extends State<TooltipCard>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Don't show again button
-                  Flexible(
-                    flex: 3,
+                  Expanded(
                     child: FilledButton.tonal(
                       onPressed: widget.step.onDontShowAgain ?? widget.onSkip,
                       style: widget.step.dontShowAgainStyle ??
@@ -434,29 +433,30 @@ class _TooltipCardState extends State<TooltipCard>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            textStyle: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
                           ),
-                      child: Text(
-                        widget.step.dontShowAgainText,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                      child: FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Text(
+                          widget.step.dontShowAgainText,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodySmall,
+                          maxLines: 2,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 16),
 
                   Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Previous arrow (Left-facing arrow)
                       IconButton(
                         onPressed: isFirstStep ? null : widget.onPrevious,
-                        icon: const Icon(Icons.arrow_back_ios_new),
-                        iconSize: 10,
+                        icon: const Icon(Icons.chevron_left),
+                        iconSize: 16,
                         color: textColor.withValues(
                             alpha: isFirstStep ? 0.3 : 1.0),
                         padding: const EdgeInsets.all(0),
@@ -473,30 +473,54 @@ class _TooltipCardState extends State<TooltipCard>
                       ),
 
                       if (widget.step.showProgress)
-                        TourProgressIndicator(
-                          currentStep: widget.currentStepIndex,
-                          totalSteps: widget.totalSteps,
-                          style: ProgressIndicatorStyle.textCompact,
-                          activeColor: textColor,
-                          inactiveColor: textColor.withValues(alpha: 0.3),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: TourProgressIndicator(
+                            currentStep: widget.currentStepIndex,
+                            totalSteps: widget.totalSteps,
+                            style: ProgressIndicatorStyle.textCompact,
+                            activeColor: textColor,
+                            inactiveColor: textColor.withValues(alpha: 0.3),
+                          ),
                         ),
-                      IconButton(
-                        onPressed: widget.onNext,
-                        icon: const Icon(Icons.arrow_forward_ios),
-                        iconSize: 10,
-                        color: textColor,
-                        padding: const EdgeInsets.all(0),
-                        constraints: const BoxConstraints(
-                          maxHeight: 24,
-                          maxWidth: 24,
-                          minHeight: 24,
-                          minWidth: 24,
-                        ),
-                        style: IconButton.styleFrom(
+
+                      if (!widget.step.isLast)
+                        IconButton(
+                          onPressed: widget.onNext,
+                          icon: const Icon(Icons.chevron_right),
+                          iconSize: 16,
+                          color: textColor,
                           padding: const EdgeInsets.all(0),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          constraints: const BoxConstraints(
+                            maxHeight: 24,
+                            maxWidth: 24,
+                            minHeight: 24,
+                            minWidth: 24,
+                          ),
+                          style: IconButton.styleFrom(
+                            padding: const EdgeInsets.all(0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                         ),
-                      ),
+
+                      if (widget.step.isLast)
+                        IconButton(
+                          onPressed: widget.onSkip,
+                          icon: const Icon(Icons.check_circle_outline),
+                          iconSize: 16,
+                          color: textColor,
+                          padding: const EdgeInsets.all(0),
+                          constraints: const BoxConstraints(
+                            maxHeight: 24,
+                            maxWidth: 24,
+                            minHeight: 24,
+                            minWidth: 24,
+                          ),
+                          style: IconButton.styleFrom(
+                            padding: const EdgeInsets.all(0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
                     ],
                   ),
                 ],

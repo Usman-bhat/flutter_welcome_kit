@@ -54,7 +54,7 @@ class TourProgressIndicator extends StatelessWidget {
       case ProgressIndicatorStyle.text:
         return _buildText('Step ${currentStep + 1} of $totalSteps');
       case ProgressIndicatorStyle.textCompact:
-        return _buildText('${currentStep + 1}/$totalSteps');
+        return _buildText('${currentStep + 1} / $totalSteps');
       case ProgressIndicatorStyle.none:
         return const SizedBox.shrink();
     }
@@ -85,12 +85,7 @@ class TourProgressIndicator extends StatelessWidget {
       color: Colors.transparent,
       child: Text(
         text,
-        style: textStyle ??
-            TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: activeColor.withValues(alpha: 0.8),
-            ),
+        style: textStyle ?? const TextStyle(fontSize: 14),
       ),
     );
   }

@@ -178,7 +178,7 @@ class TourController {
             onNext: next,
             onPrevious: previous,
             onSkip: skip,
-            dismissOnBarrierTap: step.dismissOnBarrierTap,
+            dismissOnBarrierTap: dismissOnBarrierTap,
           ),
         ],
       ),

@@ -94,13 +94,6 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
           description:
               'Tap here to add a new task. This step has NO duration, so it waits for you!',
           backgroundColor: Colors.indigo,
-          animation: StepAnimation.fadeSlideUp,
-          highlightShape: HighlightShape.circle,
-          showPulse: true,
-          duration: null, // Waits for user interaction
-          showCloseButton: false,
-          showProgress: true,
-          onDontShowAgain: null,
         ),
         TourStep(
           key: _filterKey,
@@ -111,7 +104,6 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
           animation: StepAnimation.fadeSlideDown,
           highlightShape: HighlightShape.circle,
           duration: const Duration(seconds: 10),
-          dismissOnBarrierTap: false,
         ),
         TourStep(
           key: _searchKey,
@@ -182,6 +174,7 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
           ),
         );
       },
+      dismissOnBarrierTap: false,
       onSkip: () {
         setState(() => _showTour = false);
       },
