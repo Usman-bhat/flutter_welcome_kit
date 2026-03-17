@@ -41,6 +41,15 @@ class TourController {
   /// Whether to dismiss the tour when tapping outside
   final bool dismissOnBarrierTap;
 
+  /// Custom text for the "Don't show again" button
+  final String dontShowAgainText;
+
+  /// Callback for the "Don't show again" button
+  final VoidCallback? onDontShowAgain;
+
+  /// Custom style for the "Don't show again" button
+  final ButtonStyle? dontShowAgainStyle;
+
   OverlayEntry? _overlayEntry;
   int _currentStepIndex = 0;
   bool _isRunning = false;
@@ -55,6 +64,9 @@ class TourController {
     this.persistenceKey,
     this.overlayColor = const Color.fromRGBO(0, 0, 0, 0.7),
     this.dismissOnBarrierTap = false,
+    this.dontShowAgainText = 'Bir daha gösterme',
+    this.onDontShowAgain,
+    this.dontShowAgainStyle,
   });
 
   /// Current step index (0-based)
@@ -179,6 +191,9 @@ class TourController {
             onPrevious: previous,
             onSkip: skip,
             dismissOnBarrierTap: dismissOnBarrierTap,
+            dontShowAgainText: dontShowAgainText,
+            onDontShowAgain: onDontShowAgain,
+            dontShowAgainStyle: dontShowAgainStyle,
           ),
         ],
       ),

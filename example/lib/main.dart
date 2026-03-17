@@ -127,7 +127,6 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
           highlightShape: HighlightShape.rounded,
           spotlightPadding: 4,
           duration: const Duration(seconds: 6),
-          dontShowAgainText: 'Kapat ve bir daha açma',
         ),
         TourStep(
           key: _priorityBadgeKey,
@@ -180,6 +179,11 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
       },
       onStepChange: (index, step) {
         debugPrint('Tour step ${index + 1}: ${step.title}');
+      },
+      dontShowAgainText: 'Kapat ve bir daha açma',
+      onDontShowAgain: () {
+        print('dont show again worked.');
+        _tourController.end();
       },
     );
   }

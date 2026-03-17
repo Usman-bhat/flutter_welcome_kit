@@ -85,15 +85,6 @@ class TourStep {
   /// Whether to show a close button in the title area
   final bool showCloseButton;
 
-  /// Custom text for the "Don't show again" button
-  final String dontShowAgainText;
-
-  /// Callback for the "Don't show again" button
-  final VoidCallback? onDontShowAgain;
-
-  /// Custom style for the "Don't show again" button
-  final ButtonStyle? dontShowAgainStyle;
-
   const TourStep({
     required this.key,
     required this.title,
@@ -121,8 +112,5 @@ class TourStep {
     this.iconColor,
     this.onDisplay,
     this.showCloseButton = false,
-    this.dontShowAgainText = 'Bir daha gösterme',
-    this.onDontShowAgain,
-    this.dontShowAgainStyle,
   });
 }

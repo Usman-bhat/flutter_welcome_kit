@@ -49,12 +49,24 @@ class TooltipCard extends StatefulWidget {
     required this.onPrevious,
     required this.onSkip,
     this.dismissOnBarrierTap = true,
+    required this.dontShowAgainText,
+    this.onDontShowAgain,
+    this.dontShowAgainStyle,
     this.animationDuration = const Duration(milliseconds: 400),
     this.animationCurve = Curves.easeOutCubic,
   });
 
   /// Whether to dismiss the tour when tapping outside the tooltip
   final bool dismissOnBarrierTap;
+
+  /// Custom text for the "Don't show again" button
+  final String dontShowAgainText;
+
+  /// Callback for the "Don't show again" button
+  final VoidCallback? onDontShowAgain;
+
+  /// Custom style for the "Don't show again" button
+  final ButtonStyle? dontShowAgainStyle;
 
   @override
   State<TooltipCard> createState() => _TooltipCardState();
@@ -421,8 +433,8 @@ class _TooltipCardState extends State<TooltipCard>
                   // Don't show again button
                   Expanded(
                     child: FilledButton.tonal(
-                      onPressed: widget.step.onDontShowAgain ?? widget.onSkip,
-                      style: widget.step.dontShowAgainStyle ??
+                      onPressed: widget.onDontShowAgain ?? widget.onSkip,
+                      style: widget.dontShowAgainStyle ??
                           FilledButton.styleFrom(
                             backgroundColor: textColor.withValues(alpha: 0.1),
                             foregroundColor: textColor,
@@ -437,7 +449,7 @@ class _TooltipCardState extends State<TooltipCard>
                       child: FittedBox(
                         fit: BoxFit.fitWidth,
                         child: Text(
-                          widget.step.dontShowAgainText,
+                          widget.dontShowAgainText,
                           overflow: TextOverflow.ellipsis,
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(

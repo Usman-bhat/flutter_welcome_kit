@@ -15,6 +15,9 @@ class TooltipOverlayWrapper extends StatefulWidget {
   final VoidCallback onNext;
   final VoidCallback onPrevious;
   final VoidCallback onSkip;
+  final String dontShowAgainText;
+  final VoidCallback? onDontShowAgain;
+  final ButtonStyle? dontShowAgainStyle;
 
   const TooltipOverlayWrapper({
     super.key,
@@ -25,6 +28,9 @@ class TooltipOverlayWrapper extends StatefulWidget {
     required this.onNext,
     required this.onPrevious,
     required this.onSkip,
+    required this.dontShowAgainText,
+    this.onDontShowAgain,
+    this.dontShowAgainStyle,
   });
 
   @override
@@ -80,6 +86,9 @@ class _TooltipOverlayWrapperState extends State<TooltipOverlayWrapper> {
             onNext: widget.onNext,
             onPrevious: widget.onPrevious,
             onSkip: widget.onSkip,
+            dontShowAgainText: widget.dontShowAgainText,
+            onDontShowAgain: widget.onDontShowAgain,
+            dontShowAgainStyle: widget.dontShowAgainStyle,
           ),
         ],
       ),
