@@ -106,17 +106,22 @@ class TourController {
 
   /// Move to the next step
   void next() {
-    if (_currentStepIndex < steps.length - 1) {
+    if (!_isRunning) return;
+    
+    final currentStep = steps[_currentStepIndex];
+    if (currentStep.isLast || _currentStepIndex >= steps.length - 1) {
+      _complete();
+    } else {
       _currentStepIndex++;
       _showStep();
       onStepChange?.call(_currentStepIndex, steps[_currentStepIndex]);
-    } else {
-      _complete();
     }
   }
 
   /// Move to the previous step
   void previous() {
+    if (!_isRunning) return;
+    
     if (_currentStepIndex > 0) {
       _currentStepIndex--;
       _showStep();

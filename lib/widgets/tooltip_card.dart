@@ -504,6 +504,7 @@ class _TooltipCardState extends State<TooltipCard>
                       if (!widget.step.isLast)
                         IconButton(
                           onPressed: widget.onNext,
+                          tooltip: buttonLabel,
                           icon: const Icon(Icons.chevron_right),
                           iconSize: 16,
                           color: textColor,
@@ -522,7 +523,8 @@ class _TooltipCardState extends State<TooltipCard>
 
                       if (widget.step.isLast)
                         IconButton(
-                          onPressed: widget.onSkip,
+                          onPressed: widget.onNext,
+                          tooltip: buttonLabel,
                           icon: const Icon(Icons.check_circle_outline),
                           iconSize: 16,
                           color: textColor,
