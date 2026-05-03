@@ -405,7 +405,7 @@ class _TooltipCardState extends State<TooltipCard>
                         minWidth: 28,
                         minHeight: 28,
                       ),
-                      tooltip: widget.step.showCloseButton ? 'Close' : 'Skip',
+                      tooltip: widget.step.skipButtonLabel ?? (widget.step.showCloseButton ? 'Close' : 'Skip'),
                       color: textColor.withValues(alpha: 0.6),
                     ),
                 ],
@@ -430,63 +430,78 @@ class _TooltipCardState extends State<TooltipCard>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Don't show again button
-                  Expanded(
-                    child: FilledButton.tonal(
-                      onPressed: widget.onDontShowAgain ?? widget.onSkip,
-                      style: widget.dontShowAgainStyle ??
-                          FilledButton.styleFrom(
-                            backgroundColor: textColor.withValues(alpha: 0.1),
-                            foregroundColor: textColor,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                  // Don't show again or Skip button
+                  if (widget.onDontShowAgain != null)
+                    Expanded(
+                      child: TextButton(
+                        onPressed: widget.onDontShowAgain,
+                        style: widget.dontShowAgainStyle ??
+                            TextButton.styleFrom(
+                              foregroundColor: textColor.withValues(alpha: 0.7),
+                              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              alignment: Alignment.centerLeft,
                             ),
-                          ),
-                      child: FittedBox(
-                        fit: BoxFit.fitWidth,
                         child: Text(
                           widget.dontShowAgainText,
                           overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: textColor,
-                                  ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: textColor.withValues(alpha: 0.7),
+                                decoration: TextDecoration.underline,
+                              ),
                           maxLines: 1,
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
+                    )
+                  else if (widget.step.showSkipButton)
+                    TextButton(
+                      onPressed: widget.onSkip,
+                      style: TextButton.styleFrom(
+                        foregroundColor: textColor.withValues(alpha: 0.7),
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        alignment: Alignment.centerLeft,
+                      ),
+                      child: Text(
+                        widget.step.skipButtonLabel ?? 'Skip',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: textColor.withValues(alpha: 0.8),
+                            ),
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
+
+                  const SizedBox(width: 8),
 
                   Row(
-                    mainAxisSize: MainAxisSize.max,
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Previous arrow (Left-facing arrow)
-                      if (!isFirstStep)
-                        IconButton(
-                          onPressed: widget.onPrevious,
-                          icon: const Icon(Icons.chevron_left),
-                          iconSize: 16,
-                          color: textColor.withValues(
-                              alpha: isFirstStep ? 0.3 : 1.0),
-                          padding: const EdgeInsets.all(0),
-                          constraints: const BoxConstraints(
-                            maxHeight: 24,
-                            maxWidth: 24,
-                            minHeight: 24,
-                            minWidth: 24,
-                          ),
-                          style: IconButton.styleFrom(
-                            padding: const EdgeInsets.all(0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ),
+                      // Previous button
+                      if (!isFirstStep && widget.step.showPreviousButton)
+                        widget.step.previousButtonLabel != null
+                            ? TextButton(
+                                onPressed: widget.onPrevious,
+                                style: TextButton.styleFrom(
+                                  foregroundColor: textColor,
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(widget.step.previousButtonLabel!),
+                              )
+                            : IconButton(
+                                onPressed: widget.onPrevious,
+                                icon: const Icon(Icons.chevron_left),
+                                iconSize: 20,
+                                color: textColor,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                              ),
 
                       if (widget.step.showProgress)
                         Padding(
@@ -495,51 +510,56 @@ class _TooltipCardState extends State<TooltipCard>
                             currentStep: widget.currentStepIndex,
                             totalSteps: widget.totalSteps,
                             style: ProgressIndicatorStyle.textCompact,
-                            textStyle: TextStyle(color: textColor),
+                            textStyle: TextStyle(color: textColor, fontSize: 13),
                             activeColor: textColor,
                             inactiveColor: textColor.withValues(alpha: 0.3),
                           ),
                         ),
 
+                      // Next/Done button
                       if (!widget.step.isLast)
-                        IconButton(
-                          onPressed: widget.onNext,
-                          tooltip: buttonLabel,
-                          icon: const Icon(Icons.chevron_right),
-                          iconSize: 16,
-                          color: textColor,
-                          padding: const EdgeInsets.all(0),
-                          constraints: const BoxConstraints(
-                            maxHeight: 24,
-                            maxWidth: 24,
-                            minHeight: 24,
-                            minWidth: 24,
-                          ),
-                          style: IconButton.styleFrom(
-                            padding: const EdgeInsets.all(0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ),
+                        widget.step.buttonLabel != null && widget.step.buttonLabel != 'Next'
+                            ? TextButton(
+                                onPressed: widget.onNext,
+                                style: TextButton.styleFrom(
+                                  foregroundColor: textColor,
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(widget.step.buttonLabel!),
+                              )
+                            : IconButton(
+                                onPressed: widget.onNext,
+                                tooltip: buttonLabel,
+                                icon: const Icon(Icons.chevron_right),
+                                iconSize: 20,
+                                color: textColor,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                              ),
 
                       if (widget.step.isLast)
-                        IconButton(
-                          onPressed: widget.onNext,
-                          tooltip: buttonLabel,
-                          icon: const Icon(Icons.check_circle_outline),
-                          iconSize: 16,
-                          color: textColor,
-                          padding: const EdgeInsets.all(0),
-                          constraints: const BoxConstraints(
-                            maxHeight: 24,
-                            maxWidth: 24,
-                            minHeight: 24,
-                            minWidth: 24,
-                          ),
-                          style: IconButton.styleFrom(
-                            padding: const EdgeInsets.all(0),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ),
+                        widget.step.buttonLabel != null && widget.step.buttonLabel != 'Done'
+                            ? TextButton(
+                                onPressed: widget.onNext,
+                                style: TextButton.styleFrom(
+                                  foregroundColor: textColor,
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(widget.step.buttonLabel!),
+                              )
+                            : IconButton(
+                                onPressed: widget.onNext,
+                                tooltip: buttonLabel,
+                                icon: const Icon(Icons.check_circle_outline),
+                                iconSize: 20,
+                                color: textColor,
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                              ),
                     ],
                   ),
                 ],

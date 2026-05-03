@@ -25,6 +25,12 @@ class TourStep {
   /// Custom label for the primary button (defaults to "Next" or "Done")
   final String? buttonLabel;
 
+  /// Custom label for the previous button
+  final String? previousButtonLabel;
+
+  /// Custom label for the skip button
+  final String? skipButtonLabel;
+
   /// Whether this is the last step in the tour
   final bool isLast;
 
@@ -92,6 +98,8 @@ class TourStep {
     this.backgroundColor,
     this.duration,
     this.buttonLabel,
+    this.previousButtonLabel,
+    this.skipButtonLabel,
     this.isLast = false,
     // v2.0 defaults
     this.animation = StepAnimation.fadeSlideUp,

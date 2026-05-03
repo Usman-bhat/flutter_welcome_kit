@@ -64,7 +64,7 @@ class TourController {
     this.persistenceKey,
     this.overlayColor = const Color.fromRGBO(0, 0, 0, 0.7),
     this.dismissOnBarrierTap = false,
-    this.dontShowAgainText = 'Bir daha gösterme',
+    this.dontShowAgainText = 'Don\'t show again',
     this.onDontShowAgain,
     this.dontShowAgainStyle,
   });

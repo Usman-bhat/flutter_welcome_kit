@@ -180,7 +180,7 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
       onStepChange: (index, step) {
         debugPrint('Tour step ${index + 1}: ${step.title}');
       },
-      dontShowAgainText: 'Kapat ve bir daha açma',
+      dontShowAgainText: 'Don\'t show again',
       onDontShowAgain: () {
         print('dont show again worked.');
         _tourController.end();
