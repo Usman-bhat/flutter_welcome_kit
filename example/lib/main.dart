@@ -88,6 +88,23 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
     _tourController = TourController(
       context: context,
       steps: [
+        // ── Keyless step: no GlobalKey, no spotlight, centred on screen ───────
+        // This is the new feature: omit `key` and the tooltip floats at the
+        // centre of the screen (TooltipPosition.center is the default when
+        // no key is provided).  No arrow is drawn.
+        TourStep(
+          // key is intentionally omitted
+          title: '👋 Welcome to Task Manager!',
+          description:
+              'This tooltip has NO target widget — it appears right at the '
+              'centre of the screen using the new optional-key feature.',
+          backgroundColor: const Color(0xFF6C3CE1),
+          animation: StepAnimation.scale,
+          preferredPosition: TooltipPosition.center,
+          duration: const Duration(seconds: 7),
+          showCloseButton: true,
+        ),
+
         TourStep(
           key: _addTaskKey,
           title: '➕ Create Tasks',
@@ -157,6 +174,20 @@ class _TaskManagerDemoState extends State<TaskManagerDemo> {
           backgroundColor: Colors.blue,
           animation: StepAnimation.fadeSlideUp,
           highlightShape: HighlightShape.rounded,
+          duration: const Duration(seconds: 6),
+        ),
+
+        // ── Second keyless step: mid-/end-of-tour tip, also centred ───────────
+        TourStep(
+          // key is intentionally omitted
+          title: '💡 Pro Tip',
+          description:
+              'You can use TooltipPosition.center on any step — with OR '
+              'without a target widget — to anchor the tooltip to the '
+              'centre of the screen.',
+          backgroundColor: const Color(0xFF1A7F5E),
+          animation: StepAnimation.fadeSlideUp,
+          preferredPosition: TooltipPosition.center,
           isLast: true,
           buttonLabel: 'Get Started! 🚀',
           duration: const Duration(seconds: 8),

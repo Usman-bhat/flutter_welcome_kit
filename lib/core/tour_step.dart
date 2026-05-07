@@ -5,9 +5,17 @@ import 'enums.dart';
 ///
 /// Each step defines which widget to highlight, what content to show in the
 /// tooltip, and how the step should behave and appear.
+///
+/// When [key] is `null` the step has no target widget. The tooltip will be
+/// positioned based on [preferredPosition] (defaults to [TooltipPosition.center]
+/// when key is null) and no spotlight overlay is drawn.
 class TourStep {
-  /// The GlobalKey of the widget to highlight
-  final GlobalKey key;
+  /// The GlobalKey of the widget to highlight.
+  ///
+  /// May be `null` for steps that don't need to highlight a specific widget.
+  /// When null, set [preferredPosition] to control where the tooltip appears
+  /// (e.g. [TooltipPosition.center] for screen-center display).
+  final GlobalKey? key;
 
   /// Title text displayed in the tooltip header
   final String title;
@@ -92,7 +100,7 @@ class TourStep {
   final bool showCloseButton;
 
   const TourStep({
-    required this.key,
+    this.key,
     required this.title,
     required this.description,
     this.backgroundColor,

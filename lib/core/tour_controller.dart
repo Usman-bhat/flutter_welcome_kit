@@ -165,12 +165,21 @@ class TourController {
     _overlayEntry?.remove();
 
     final step = steps[_currentStepIndex];
-    final renderBox = step.key.currentContext?.findRenderObject() as RenderBox?;
     final overlay = Overlay.of(context);
 
-    if (renderBox == null) return;
+    // Resolve the target rectangle.
+    // • With a key  → find the real widget bounds.
+    // • Without key → use a zero-sized rect at the screen centre so that
+    //   TooltipCard can position itself via preferredPosition (center by default).
+    final RenderBox? renderBox =
+        step.key?.currentContext?.findRenderObject() as RenderBox?;
 
-    final target = renderBox.localToGlobal(Offset.zero) & renderBox.size;
+    // If a key was provided but the widget isn't in the tree yet, bail out.
+    if (step.key != null && renderBox == null) return;
+
+    final Rect target = renderBox != null
+        ? renderBox.localToGlobal(Offset.zero) & renderBox.size
+        : Rect.zero; // placeholder; TooltipCard will centre itself
 
     // Call onDisplay callback for feature discovery tracking
     step.onDisplay?.call();
@@ -178,18 +187,31 @@ class TourController {
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
-          Spotlight(
-            targetRect: target,
-            padding: step.spotlightPadding,
-            overlayColor: overlayColor,
-            shape: step.highlightShape,
-            borderRadius: step.spotlightBorderRadius,
-            showPulse: step.showPulse,
-            onTargetTap: step.allowTargetTap ? next : null,
-          ),
+          // Only draw a spotlight when there is a real target widget
+          if (renderBox != null)
+            Spotlight(
+              targetRect: target,
+              padding: step.spotlightPadding,
+              overlayColor: overlayColor,
+              shape: step.highlightShape,
+              borderRadius: step.spotlightBorderRadius,
+              showPulse: step.showPulse,
+              onTargetTap: step.allowTargetTap ? next : null,
+            )
+          else
+            // Full-screen dimmed barrier (no cutout)
+            GestureDetector(
+              onTap: dismissOnBarrierTap ? skip : null,
+              child: Container(
+                color: overlayColor,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
           TooltipCard(
             step: step,
             targetRect: target,
+            hasTarget: renderBox != null,
             currentStepIndex: _currentStepIndex,
             totalSteps: steps.length,
             onNext: next,

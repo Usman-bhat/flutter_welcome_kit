@@ -59,6 +59,9 @@ enum TooltipPosition {
 
   /// Force tooltip to appear right of target
   right,
+
+  /// Show tooltip at the center of the screen (no target widget required)
+  center,
 }
 
 /// Enum defining the style of progress indicator

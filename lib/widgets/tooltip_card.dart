@@ -43,6 +43,7 @@ class TooltipCard extends StatefulWidget {
     super.key,
     required this.step,
     required this.targetRect,
+    this.hasTarget = true,
     required this.currentStepIndex,
     required this.totalSteps,
     required this.onNext,
@@ -55,6 +56,12 @@ class TooltipCard extends StatefulWidget {
     this.animationDuration = const Duration(milliseconds: 400),
     this.animationCurve = Curves.easeOutCubic,
   });
+
+  /// Whether this step has a real target widget.
+  ///
+  /// When `false` the tooltip is positioned at the screen centre (or as
+  /// specified by [TourStep.preferredPosition]) and no arrow is drawn.
+  final bool hasTarget;
 
   /// Whether to dismiss the tour when tapping outside the tooltip
   final bool dismissOnBarrierTap;
@@ -147,18 +154,33 @@ class _TooltipCardState extends State<TooltipCard>
     super.dispose();
   }
 
-  /// Calculate the best position for the tooltip and arrow direction
+  /// Calculate the best position for the tooltip and arrow direction.
+  ///
+  /// When [TooltipCard.hasTarget] is false or the preferred position is
+  /// [TooltipPosition.center], the card is centred on screen and no arrow
+  /// direction is meaningful (caller should skip drawing the arrow).
   (Offset position, ArrowDirection arrowDir) _calculatePositionAndArrow(
       Size screenSize) {
     if (screenSize.width <= 0 || screenSize.height <= 0) {
       return (Offset.zero, ArrowDirection.up);
     }
 
-    final targetCenter = widget.targetRect.center;
-    const double gap = 16.0; // Gap between target and tooltip
     const double estimatedCardHeight = 180.0;
 
-    // Determine best placement based on available space
+    // ── Centre positioning (no target, or explicitly requested) ─────────────
+    final bool wantsCenter = widget.step.preferredPosition == TooltipPosition.center ||
+        (!widget.hasTarget && widget.step.preferredPosition == TooltipPosition.auto);
+
+    if (wantsCenter) {
+      final dx = (screenSize.width - _cardWidth) / 2;
+      final dy = (screenSize.height - estimatedCardHeight) / 2;
+      return (Offset(dx, dy), ArrowDirection.up); // arrow direction is unused
+    }
+
+    // ── Target-relative positioning ──────────────────────────────────────────
+    final targetCenter = widget.targetRect.center;
+    const double gap = 16.0;
+
     final spaceAbove = widget.targetRect.top;
     final spaceBelow = screenSize.height - widget.targetRect.bottom;
     final spaceRight = screenSize.width - widget.targetRect.right;
@@ -166,7 +188,6 @@ class _TooltipCardState extends State<TooltipCard>
     ArrowDirection arrowDir;
     double dx, dy;
 
-    // Check preferred position first
     switch (widget.step.preferredPosition) {
       case TooltipPosition.top:
         arrowDir = ArrowDirection.down;
@@ -188,6 +209,7 @@ class _TooltipCardState extends State<TooltipCard>
         dx = widget.targetRect.right + gap;
         dy = targetCenter.dy - estimatedCardHeight / 2;
         break;
+      case TooltipPosition.center: // already handled above
       case TooltipPosition.auto:
         // Auto: prefer bottom, then top, then sides
         if (spaceBelow >= estimatedCardHeight + gap) {
@@ -568,8 +590,9 @@ class _TooltipCardState extends State<TooltipCard>
           ),
         ),
 
-        // Arrow pointing toward target
-        _buildArrow(arrowDir, arrowOffset, cardColor),
+        // Arrow pointing toward target — only when there is a real target
+        if (widget.hasTarget)
+          _buildArrow(arrowDir, arrowOffset, cardColor),
       ],
     );
   }
