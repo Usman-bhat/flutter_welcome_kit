@@ -1,4 +1,16 @@
+## 2.1.0
+
+### ✨ New Features
+
+- **Optional `key` on `TourStep`** — `GlobalKey` is no longer required. Steps without a key show a tooltip without any spotlight or widget highlight, perfect for welcome splashes and standalone tips.
+- **`TooltipPosition.center`** — New enum value that anchors the tooltip to the screen centre regardless of whether a target widget exists.
+- When `key` is `null` and `preferredPosition` is `auto` (default), the tooltip automatically centres itself on screen.
+- No arrow indicator is drawn for keyless / centre-positioned steps.
+
+---
+
 ## 2.0.0
+
 
 ### ✨ New Features
 

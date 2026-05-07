@@ -1,0 +1,6 @@
+# Exclude Project IDX dev environment config from pub.dev package
+.idx/
+
+# Exclude example app build artifacts
+example/build/
+example/.dart_tool/
