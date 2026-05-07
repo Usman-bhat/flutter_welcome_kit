@@ -1,0 +1,40 @@
+name: Publish to pub.dev
+
+# Trigger: push a version tag like v2.1.0 → publishes automatically.
+# Regular pushes to main do NOT publish — only tagged releases do.
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'   # matches v1.0.0, v2.1.0, etc.
+
+# Required so the OIDC token can be requested (no secrets needed!)
+permissions:
+  id-token: write   # lets pub.dev verify this run came from GitHub Actions
+
+jobs:
+  publish:
+    name: Publish flutter_welcome_kit
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repo at the tagged commit
+      - uses: actions/checkout@v4
+
+      # 2. Set up Flutter (stable channel)
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # 3. Install dependencies
+      - name: Get dependencies
+        run: flutter pub get
+
+      # 4. Run analyzer to catch any issues before publishing
+      - name: Analyze
+        run: flutter analyze lib/
+
+      # 5. Publish — dart pub publish uses OIDC automatically
+      #    No PAT / secret required; pub.dev verifies via GitHub OIDC.
+      - name: Publish
+        run: dart pub publish --force
